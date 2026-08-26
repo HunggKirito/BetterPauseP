@@ -1,0 +1,26 @@
+{
+	"geode": "5.9.0",
+	"gd": { 
+		"win": "2.2081" 
+	},
+	"id": "hungqn.btrpausep",
+	"name": "BetterPauseP",
+	"version": "v1.0.0",
+	"developer": "hungqn",
+  "description": "A modern Windows port of BetterPause that enhances the Geometry Dash pause menu.",
+  "links": {
+    "source": "https://github.com/HunggKirito/BetterPauseP"
+  },
+  "issues": {
+    "info": "Report bugs through GitHub Issues or contact `hungqnvn` on Discord.",
+    "url": "https://github.com/HunggKirito/BetterPauseP/issues"
+  },
+  	"early-load": true,
+  	"tags": ["customization", "interface", "enhancement"],
+  	"resources": { 
+		"sprites": ["resources/*.png"] 
+	},
+  	"dependencies": { 
+		"geode.node-ids": ">=v1.23.3" 
+	}
+}
