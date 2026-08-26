@@ -22,9 +22,14 @@ An unofficial Windows x64 maintenance port of BetterPause for Geometry Dash 2.20
 
 ### With lots of Pause Mode!
 
-<img src="images/agpause.png" width="800" alt="AG.Pause menu">
-<img src="images/normalpause.png" width="800" alt="Normal Pause menu">
-<img src="images/simplepause.png" width="800" alt="Simple Pause menu">
+- AG.Pause:
+<img src="images/agpause.png" width="600" alt="AG.Pause menu">
+
+- Normal Pause:
+<img src="images/normalpause.png" width="600" alt="Normal Pause menu">
+
+- Simple Pause:
+<img src="images/simplepause.png" width="600" alt="Simple Pause menu">
 
 ## Requirements
 
