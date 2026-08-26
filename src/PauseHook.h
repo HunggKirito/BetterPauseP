@@ -18,10 +18,6 @@ using namespace geode::prelude;
 namespace {
     void collectModButtons(cocos2d::CCNode* node,
         std::vector<CCMenuItemSpriteExtra*>& buttons) {
-        // This mirrors the original BetterPause-Geode implementation: collect
-        // every menu-item button except the known vanilla PauseLayer buttons.
-        // Some mods (including Death Tracker) put the mod ID on a parent menu,
-        // leaving the actual CCMenuItemSpriteExtra unnamed.
         if (auto button = typeinfo_cast<CCMenuItemSpriteExtra*>(node)) {
             static constexpr std::array<std::string_view, 7> vanillaIDs {
                 "edit-button", "full-restart-button", "practice-button",
@@ -39,14 +35,9 @@ namespace {
         }
     }
 
-    // Hide the vanilla branch while keeping paths that contain nodes owned by
-    // other mods. Geode IDs owned by mods use the "mod.id/node-id" form.
     bool hideVanillaPauseBranch(cocos2d::CCNode* node) {
         auto const id = node->getID().view();
 
-        // PauseLayer's full-screen translucent layer supplies the dim/blur
-        // behind the custom UI. It must remain visible even though it is a
-        // vanilla node and has no mod-owned descendants.
         if (id == "background" ||
             typeinfo_cast<cocos2d::CCLayerColor*>(node) != nullptr) {
             node->setVisible(true);
@@ -70,8 +61,6 @@ namespace {
 
 class $modify(BetterPauseLayerHook, PauseLayer) {
     static void onModify(auto& self) {
-        // Our post-setup work must run after these mods have inserted their
-        // PauseLayer buttons, otherwise there is nothing available to move.
         (void)self.setHookPriorityAfterPost(
             "PauseLayer::customSetup", "elohmrow.death_tracker"
         );
@@ -83,17 +72,12 @@ class $modify(BetterPauseLayerHook, PauseLayer) {
     void customSetup() {
         PauseLayer::customSetup();
 
-        // Ensure IDs are assigned before distinguishing vanilla nodes from
-        // nodes injected by other Geode mods.
         NodeIDs::provideFor(this);
 
         auto const useBetterPause =
             BetterPauseManager::sharedState()->m_pSwitchPause.m_uOffset == 0;
         std::vector<CCMenuItemSpriteExtra*> modButtons;
         if (useBetterPause) {
-            // Save buttons injected by other mods before hiding their old
-            // vanilla menu branches. They are appended to BetterPause's main
-            // button column after that column has been created below.
             collectModButtons(this, modButtons);
 
             for (auto child : this->getChildrenExt<cocos2d::CCNode*>()) {

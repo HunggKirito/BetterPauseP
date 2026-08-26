@@ -18,13 +18,10 @@ BetterPauseP is a game-changing modification designed to enhance the Geometry Da
 
 - `Hide Pause Menu:` A convenient eye icon allows you to hide the pause menu at will, without resuming the level. This feature provides a seamless and uninterrupted gameplay experience.
 
-**BetterPause is your ultimate companion for Geometry Dash, making it easier than ever to fine-tune your gaming experience and enjoy the game to the fullest.** game to the fullest.**
+**BetterPause makes it easier to fine-tune your pause-menu experience and return to playing.**
 
 ## Credits
 
 The original BetterPause mod and its earlier Geode version were created by [TpdeaX](https://github.com/TpdeaX). This is an unofficial maintenance port; all credit for the original concept and implementation belongs to the original author.
 
-For problems with this port, contact `HungQN` in Geometry Dash or `hungqnvn` on Discord.
- game to the fullest.**
-
-- `Note:` This is a port version from original `BetterPause` by TpdeaX - a mod has been disconnected from 2024 with Geometry Dash 2.205. I can't update anythings because I don't know what I need to update (and I too busy). If this port version have some issues, please contact me from discord: hungqnvn or gd account: HungQN, I'll try to fix as soon as possible. Enjoy using the mod!
+For problems with this port, use [GitHub Issues](https://github.com/HunggKirito/BetterPauseP/issues) or contact `hungqnvn` on Discord.

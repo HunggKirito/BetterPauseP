@@ -25,4 +25,4 @@ This repository is an unofficial maintenance port and does not claim ownership o
 
 ## Reporting issues
 
-Use [GitHub Issues](https://github.com/HunggKirito/BetterPauseP/issues), contact `HungQN` in Geometry Dash, or contact `hungqnvn` on Discord.
+Use [GitHub Issues](https://github.com/HunggKirito/BetterPauseP/issues) or contact `hungqnvn` on Discord.

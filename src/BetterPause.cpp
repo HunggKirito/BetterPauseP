@@ -247,8 +247,6 @@ bool BetterPause::init(PauseLayer* pauseLayer, bool isEditor, bool notBetter) {
 	m_pMenuButtons2->setPosition({ 40.f, 42.f });
 	this->addChild(m_pMenuButtons2);
 
-	// Load through Geode's namespaced resource path. Texture packs can override
-	// hungqn.btpause/BE_eye-*.png without replacing a base-game sprite.
 	auto const eyeOnTexture = geode::Mod::get()->expandSpriteName("BE_eye-on-btn.png");
 	auto visibleButtonImage = cocos2d::CCSprite::create(eyeOnTexture.c_str());
 	this->m_pIsTextureEye = true;
@@ -650,8 +648,6 @@ void BetterPause::setupScrollableButtons(
 		return;
 	}
 
-	// Match the original Geode port: a 50x180 clipped ScrollLayer at the left
-	// edge, containing the pause buttons first and compatible mod buttons after.
 	auto const viewportSize = cocos2d::CCSize { 50.f, 180.f };
 	m_pButtonsViewport = cocos2d::CCLayerColor::create({ 0, 0, 0, 0 });
 	m_pButtonsViewport->setContentSize(viewportSize);
@@ -674,7 +670,6 @@ void BetterPause::setupScrollableButtons(
 		}
 	}
 
-	// Keep the exact visual order already established by BetterPause.
 	std::sort(buttons.begin(), buttons.end(), [](auto lhs, auto rhs) {
 		return lhs->getPositionY() > rhs->getPositionY();
 	});
@@ -705,9 +700,6 @@ void BetterPause::setupScrollableButtons(
 			continue;
 		}
 
-		// External mods often position/scale their normal image relative to the
-		// vanilla menu they were created in. Rebase it to the BetterPause button
-		// geometry, as the original Geode version does, before reparenting.
 		if (index >= baseButtonCount && referenceButton) {
 			auto normalImage = geode::cast::typeinfo_cast<cocos2d::CCSprite*>(button->getNormalImage());
 			auto referenceImage = geode::cast::typeinfo_cast<cocos2d::CCSprite*>(referenceButton->getNormalImage());
