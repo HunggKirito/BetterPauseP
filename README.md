@@ -14,7 +14,17 @@ An unofficial Windows x64 maintenance port of BetterPause for Geometry Dash 2.20
 
 ### BetterPause menu
 
-![BetterPause menu](screenshot1.png)
+![BetterPause menu](images/btrpause.png)
+
+### Support all mod buttons
+
+![Mod Buttons](images/btrpause2.png)
+
+### With lots of Pause Mode!
+
+<img src="images/agpause.png" width="800" alt="AG.Pause menu">
+<img src="images/normalpause.png" width="800" alt="Normal Pause menu">
+<img src="images/simplepause.png" width="800" alt="Simple Pause menu">
 
 ## Requirements
 

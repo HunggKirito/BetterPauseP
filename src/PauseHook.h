@@ -25,8 +25,12 @@ namespace {
             };
             auto const id = button->getID().view();
             if (std::find(vanillaIDs.begin(), vanillaIDs.end(), id) == vanillaIDs.end()) {
-                buttons.push_back(button);
-                return;
+                auto image = button->getNormalImage();
+                auto const size = image ? image->boundingBox().size : button->boundingBox().size;
+                if (size.width <= 80.f && size.height <= 80.f) {
+                    buttons.push_back(button);
+                    return;
+                }
             }
         }
 

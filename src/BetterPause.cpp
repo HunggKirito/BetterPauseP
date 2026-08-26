@@ -652,14 +652,14 @@ void BetterPause::setupScrollableButtons(
 	m_pButtonsViewport = cocos2d::CCLayerColor::create({ 0, 0, 0, 0 });
 	m_pButtonsViewport->setContentSize(viewportSize);
 	m_pButtonsViewport->setPosition({ 0.f, 0.f });
-	m_pButtonsViewport->setID("hungqn.btpause/buttons-viewport");
+	m_pButtonsViewport->setID("hungqn.btrpausep/buttons-viewport");
 	this->addChild(m_pButtonsViewport, 10);
 
 	m_pButtonsList = geode::ScrollLayer::create(viewportSize);
 	m_pButtonsList->setPosition({ 15.f, 115.f });
 	m_pButtonsList->setContentSize(viewportSize);
 	m_pButtonsList->setTouchEnabled(true);
-	m_pButtonsList->setID("hungqn.btpause/buttons-list");
+	m_pButtonsList->setID("hungqn.btrpausep/buttons-list");
 	m_pButtonsViewport->addChild(m_pButtonsList);
 	this->setMouseEnabled(true);
 
@@ -757,7 +757,46 @@ void BetterPause::setupScrollableButtons(
 
 	m_pButtonsList->m_contentLayer->setContentSize({ viewportSize.width, totalHeight });
 	m_pButtonsList->scrollToTop();
+	m_pButtonsMinY = m_pButtonsList->m_contentLayer->getPositionY();
 	m_pMenuButtons->setVisible(false);
+
+	m_pScrollUpSprite = cocos2d::CCSprite::createWithSpriteFrameName("edit_upBtn_001.png");
+	m_pScrollUpSprite->setScaleX(2.f);
+	m_pScrollUpSprite->setScaleY(1.4f);
+	m_pScrollUpButton = CCMenuItemSpriteExtra::create(
+		m_pScrollUpSprite, this,
+		(cocos2d::SEL_MenuHandler)&BetterPause::onScrollUpButton
+	);
+	m_pScrollUpButton->setPosition({ 0.f, 263.f });
+	m_pMenuButtons2->addChild(m_pScrollUpButton);
+
+	m_pScrollDownSprite = cocos2d::CCSprite::createWithSpriteFrameName("edit_downBtn_001.png");
+	m_pScrollDownSprite->setScaleX(2.f);
+	m_pScrollDownSprite->setScaleY(1.4f);
+	m_pScrollDownButton = CCMenuItemSpriteExtra::create(
+		m_pScrollDownSprite, this,
+		(cocos2d::SEL_MenuHandler)&BetterPause::onScrollDownButton
+	);
+	m_pScrollDownButton->setPosition({ 0.f, 65.f });
+	m_pMenuButtons2->addChild(m_pScrollDownButton);
+
+	m_pScrollUpSprite->runAction(cocos2d::CCRepeatForever::create(
+		cocos2d::CCSequence::create(
+			cocos2d::CCFadeTo::create(0.4f, 50),
+			cocos2d::CCFadeTo::create(0.4f, 255),
+			nullptr
+		)
+	));
+	m_pScrollDownSprite->runAction(cocos2d::CCRepeatForever::create(
+		cocos2d::CCSequence::create(
+			cocos2d::CCFadeTo::create(0.4f, 50),
+			cocos2d::CCFadeTo::create(0.4f, 255),
+			nullptr
+		)
+	));
+
+	this->scheduleUpdate();
+	updateScrollButtons();
 }
 
 void BetterPause::scrollWheel(float x, float y) {
@@ -765,6 +804,53 @@ void BetterPause::scrollWheel(float x, float y) {
 	if (m_pButtonsList) {
 		m_pButtonsList->scrollWheel(x, y);
 	}
+	updateScrollButtons();
+}
+
+void BetterPause::update(float dt) {
+	cocos2d::CCLayer::update(dt);
+	updateScrollButtons();
+}
+
+void BetterPause::updateScrollButtons() {
+	if (!m_pButtonsList || !m_pScrollUpButton || !m_pScrollDownButton) {
+		return;
+	}
+
+	if (m_pIsHide || m_pButtonsMinY >= -0.5f) {
+		m_pScrollUpButton->setVisible(false);
+		m_pScrollDownButton->setVisible(false);
+		return;
+	}
+
+	auto const positionY = m_pButtonsList->m_contentLayer->getPositionY();
+	m_pScrollUpButton->setVisible(positionY > m_pButtonsMinY + 0.5f);
+	m_pScrollDownButton->setVisible(positionY < -0.5f);
+
+}
+
+void BetterPause::onScrollUpButton(cocos2d::CCObject* sender) {
+	if (!m_pButtonsList) {
+		return;
+	}
+	auto const positionY = std::max(
+		m_pButtonsMinY,
+		m_pButtonsList->m_contentLayer->getPositionY() - 20.f
+	);
+	m_pButtonsList->m_contentLayer->setPositionY(positionY);
+	updateScrollButtons();
+}
+
+void BetterPause::onScrollDownButton(cocos2d::CCObject* sender) {
+	if (!m_pButtonsList) {
+		return;
+	}
+	auto const positionY = std::min(
+		0.f,
+		m_pButtonsList->m_contentLayer->getPositionY() + 20.f
+	);
+	m_pButtonsList->m_contentLayer->setPositionY(positionY);
+	updateScrollButtons();
 }
 
 void BetterPause::onSetValueMusic(cocos2d::CCObject* pSender) {

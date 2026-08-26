@@ -61,11 +61,20 @@ public:
 	CCMenuItemSpriteExtra* m_pButtonQuestAlt = nullptr;
 	geode::ScrollLayer* m_pButtonsList = nullptr;
 	cocos2d::CCLayerColor* m_pButtonsViewport = nullptr;
+	cocos2d::CCSprite* m_pScrollUpSprite = nullptr;
+	cocos2d::CCSprite* m_pScrollDownSprite = nullptr;
+	CCMenuItemSpriteExtra* m_pScrollUpButton = nullptr;
+	CCMenuItemSpriteExtra* m_pScrollDownButton = nullptr;
+	float m_pButtonsMinY = 0.f;
 
 	static BetterPause* create(PauseLayer* pauseLayer, bool isEditor, bool notBetter);
 	bool init(PauseLayer* pauseLayer, bool isEditor, bool notBetter);
 	void setupScrollableButtons(std::vector<CCMenuItemSpriteExtra*> const& externalButtons);
 	void scrollWheel(float x, float y) override;
+	void update(float dt) override;
+	void updateScrollButtons();
+	void onScrollUpButton(cocos2d::CCObject* sender);
+	void onScrollDownButton(cocos2d::CCObject* sender);
 	void createToggleButton(cocos2d::SEL_MenuHandler callback, bool on,
 		cocos2d::CCMenu* menu, std::string caption, cocos2d::CCPoint pos, float size,
 		bool twoColumns);
