@@ -10,6 +10,12 @@ An unofficial Windows x64 maintenance port of BetterPause for Geometry Dash 2.20
 - A texture-pack-aware control for hiding and restoring the pause menu.
 - Compatibility fixes for third-party pause buttons, including Death Tracker and Inputs Viewer.
 
+## Screenshots
+
+### BetterPause menu
+
+![BetterPause menu](screenshot1.png)
+
 ## Requirements
 
 - Geometry Dash 2.2081 with Geode 5.9.0 or newer
