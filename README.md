@@ -1,6 +1,6 @@
 # BetterPauseP
 
-An unofficial Windows x64 maintenance port of BetterPause for Geometry Dash 2.2081 and Geode 5.9.0.
+An unofficial port of BetterPause for Geometry Dash 2.2081 and Geode 5.9.0.
 
 ## Features
 
