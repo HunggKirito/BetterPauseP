@@ -819,6 +819,15 @@ void BetterPause::onHide(cocos2d::CCObject* pSender) {
 		node->setVisible(!this->m_pIsHide);
 	}
 
+	if (m_pQuestMenu) {
+		auto const showQuest = !this->m_pIsHide &&
+			BetterPauseManager::sharedState()->m_pSwitchQuest.m_uOffset == 0;
+		m_pQuestMenu->setVisible(showQuest);
+		if (m_pQuestMenu->m_mainLayer) {
+			m_pQuestMenu->m_mainLayer->setVisible(showQuest);
+		}
+	}
+
 	if (m_pIsTextureEye) {
 		auto const eyeTexture = geode::Mod::get()->expandSpriteName(
 			this->m_pIsHide ? "BE_eye-off-btn.png" : "BE_eye-on-btn.png"
