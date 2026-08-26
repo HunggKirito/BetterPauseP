@@ -12,10 +12,10 @@ An unofficial Windows x64 maintenance port of BetterPause for Geometry Dash 2.20
 
 ## Requirements
 
-- Geometry Dash 2.2081
-- Geode 5.9.0 or newer in the 5.x series
-- Windows x64
+- Geometry Dash 2.2081 with Geode 5.9.0 or newer
 - `geode.node-ids` 1.23.3 or newer
+
+* Note: For now, I've only created a port for Windows; if I have time, I might port it to mobile as well!
 
 ## Credits
 
