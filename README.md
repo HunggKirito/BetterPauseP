@@ -12,7 +12,7 @@ An unofficial maintenance port of BetterPause for Geometry Dash 2.2081 and Geode
 
 ## Screenshots
 
-### BetterPause menu
+### BetterPauseX menu
 
 ![BetterPause menu](images/btrpause.png)
 
