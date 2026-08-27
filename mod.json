@@ -1,19 +1,20 @@
 {
 	"geode": "5.9.0",
-	"gd": { 
-		"win": "2.2081" 
+	"gd": {
+		"win": "2.2081",
+		"android": "2.2081"
 	},
-	"id": "hungqn.btrpausep",
-	"name": "BetterPauseP",
-	"version": "v1.0.0",
+	"id": "hungqn.btrpause",
+	"name": "BetterPauseX",
+	"version": "v1.1.8",
 	"developer": "hungqn",
-  "description": "A modern Windows port of BetterPause that enhances the Geometry Dash pause menu.",
+  "description": "A modern port of BetterPause that enhances the Geometry Dash pause menu.",
   "links": {
-    "source": "https://github.com/HunggKirito/BetterPauseP"
+    "source": "https://github.com/HunggKirito/BetterPauseX"
   },
   "issues": {
     "info": "Report bugs through GitHub Issues or contact `hungqnvn` on Discord.",
-    "url": "https://github.com/HunggKirito/BetterPauseP/issues"
+    "url": "https://github.com/HunggKirito/BetterPauseX/issues"
   },
   	"early-load": true,
   	"tags": ["customization", "interface", "enhancement"],

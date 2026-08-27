@@ -1,6 +1,6 @@
-# BetterPauseP
+# BetterPauseX
 
-BetterPauseP is a game-changing modification designed to enhance the Geometry Dash pause menu interface. It brings a multitude of improvements that provide players with a more immersive and user-friendly experience.
+BetterPauseX is a modification for Windows and Android designed to enhance the Geometry Dash pause menu interface.
 
 ## Key Features:
 
@@ -18,10 +18,10 @@ BetterPauseP is a game-changing modification designed to enhance the Geometry Da
 
 - `Hide Pause Menu:` A convenient eye icon allows you to hide the pause menu at will, without resuming the level. This feature provides a seamless and uninterrupted gameplay experience.
 
-**BetterPause makes it easier to fine-tune your pause-menu experience and return to playing.**
+**BetterPauseX makes it easier to fine-tune your pause-menu experience and return to playing.**
 
 ## Credits
 
 The original BetterPause mod and its earlier Geode version were created by [TpdeaX](https://github.com/TpdeaX). This is an unofficial maintenance port; all credit for the original concept and implementation belongs to the original author.
 
-For problems with this port, use [GitHub Issues](https://github.com/HunggKirito/BetterPauseP/issues) or contact `hungqnvn` on Discord.
+For problems with this port, use [GitHub Issues](https://github.com/HunggKirito/BetterPauseX/issues) or contact `hungqnvn` on Discord.

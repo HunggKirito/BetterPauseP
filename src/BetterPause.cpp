@@ -2,6 +2,73 @@
 #include "BetterPause.h"
 #include "BetterPauseManager.h"
 
+namespace {
+class PauseButtonScrollLayer : public geode::ScrollLayer {
+protected:
+	PauseButtonScrollLayer(cocos2d::CCRect const& rect)
+	  : geode::ScrollLayer(rect, true, true) {}
+
+	void registerWithTouchDispatcher() override {
+		cocos2d::CCTouchDispatcher::get()->addTargetedDelegate(this, -500, false);
+	}
+
+public:
+	static PauseButtonScrollLayer* create(cocos2d::CCSize const& size) {
+		auto ret = new PauseButtonScrollLayer({ 0.f, 0.f, size.width, size.height });
+		ret->autorelease();
+		return ret;
+	}
+};
+
+class PauseButtonRowMenu : public cocos2d::CCMenu {
+protected:
+	void registerWithTouchDispatcher() override {
+		cocos2d::CCTouchDispatcher::get()->addTargetedDelegate(this, 10, true);
+	}
+
+public:
+	static PauseButtonRowMenu* create() {
+		auto ret = new PauseButtonRowMenu();
+		if (ret->init()) {
+			ret->autorelease();
+			return ret;
+		}
+		delete ret;
+		return nullptr;
+	}
+};
+
+class PopupButtonMenu : public cocos2d::CCMenu {
+protected:
+	void registerWithTouchDispatcher() override {
+		cocos2d::CCTouchDispatcher::get()->addTargetedDelegate(this, -501, true);
+	}
+
+public:
+	static PopupButtonMenu* create() {
+		auto ret = new PopupButtonMenu();
+		if (ret->init()) {
+			ret->autorelease();
+			return ret;
+		}
+		delete ret;
+		return nullptr;
+	}
+};
+
+bool hasVisibleModal(cocos2d::CCNode* node, ChallengesPage* embeddedQuest) {
+	if (!node || !node->isVisible()) return false;
+	if (node != embeddedQuest && geode::cast::typeinfo_cast<FLAlertLayer*>(node) &&
+		geode::cocos::nodeIsVisible(node)) {
+		return true;
+	}
+	for (auto child : node->getChildrenExt<cocos2d::CCNode*>()) {
+		if (hasVisibleModal(child, embeddedQuest)) return true;
+	}
+	return false;
+}
+}
+
 bool BetterPause::isNotRegister = false;
 cocos2d::CCMenu* BetterPause::pauseLayer_MenuToggles = nullptr;
 cocos2d::CCPoint BetterPause::pauseLayer_lastPoint = {};
@@ -136,8 +203,9 @@ bool BetterPause::init(PauseLayer* pauseLayer, bool isEditor, bool notBetter) {
 
 	m_pQuestMenu = ChallengesPage::create();
 	this->addChild(m_pQuestMenu);
-	m_pQuestMenu->setScale(0.7f);
+	m_pQuestMenu->setCascadeOpacityEnabled(false);
 	m_pQuestMenu->setOpacity(0);
+	m_pQuestMenu->setScale(0.7f);
 	m_pQuestMenu->setPosition({ (Utils::winSize().width / 2) - 150.f, -50.f });//140.f, -40.f
 	m_pQuestMenu->setKeyboardEnabled(false);
 	m_pQuestMenu->setKeypadEnabled(false);
@@ -145,8 +213,9 @@ bool BetterPause::init(PauseLayer* pauseLayer, bool isEditor, bool notBetter) {
 	for (size_t i = 0; i < m_pQuestMenu->m_mainLayer->getChildrenCount(); i++)
 	{
 		auto node = reinterpret_cast<cocos2d::CCNode*>(m_pQuestMenu->m_mainLayer->getChildren()->objectAtIndex(i));
-		if (std::string(Utils::getNameObj(node)) != "ChallengeNode" && !geode::cast::typeinfo_cast<cocos2d::CCLabelBMFont*>(node) &&
-			std::string(Utils::getNameObj(node)) != "LoadingCircle") {//jajaj
+		if (!geode::cast::typeinfo_cast<ChallengeNode*>(node) &&
+			!geode::cast::typeinfo_cast<cocos2d::CCLabelBMFont*>(node) &&
+			!geode::cast::typeinfo_cast<LoadingCircle*>(node)) {
 			node->setVisible(false);
 		}
 	}
@@ -411,9 +480,7 @@ bool BetterPause::init(PauseLayer* pauseLayer, bool isEditor, bool notBetter) {
 
 	auto xPosButtonsToggles = BetterPauseManager::sharedState()->m_pSwitchButtonsPos.m_uOffset == 1 ? 196.f : 250.f;
 
-	auto mlt = MoreOptionsLayer::create();
-	mlt->keyBackClicked();
-	CC_SAFE_DELETE(mlt);
+	(void)MoreOptionsLayer::create();
 
 	float xPosRES[6] = { xPosButtonsToggles, xPosButtonsToggles , xPosButtonsToggles, xPosButtonsToggles - 90.f, xPosButtonsToggles - 90.f, xPosButtonsToggles - 90.f };
 	float yPosRES[6] = { 140.f, 120.f , 100.f, 140.f, 120.f , 100.f };
@@ -655,10 +722,12 @@ void BetterPause::setupScrollableButtons(
 	m_pButtonsViewport->setID("hungqn.btrpausep/buttons-viewport");
 	this->addChild(m_pButtonsViewport, 10);
 
-	m_pButtonsList = geode::ScrollLayer::create(viewportSize);
+	m_pButtonsList = PauseButtonScrollLayer::create(viewportSize);
 	m_pButtonsList->setPosition({ 15.f, 115.f });
 	m_pButtonsList->setContentSize(viewportSize);
 	m_pButtonsList->setTouchEnabled(true);
+	m_pButtonsList->setStealingTouches(true);
+	m_pButtonsList->setCancelTouchLimit(6.f);
 	m_pButtonsList->setID("hungqn.btrpausep/buttons-list");
 	m_pButtonsViewport->addChild(m_pButtonsList);
 	this->setMouseEnabled(true);
@@ -724,9 +793,10 @@ void BetterPause::setupScrollableButtons(
 		auto row = cocos2d::CCNode::create();
 		row->setContentSize({ viewportSize.width, height });
 
-		auto rowMenu = cocos2d::CCMenu::create();
+		auto rowMenu = PauseButtonRowMenu::create();
 		rowMenu->setPosition({ 0.f, 0.f });
 		row->addChild(rowMenu);
+		m_scrollRowMenus.push_back(rowMenu);
 
 		button->retain();
 		button->removeFromParentAndCleanup(false);
@@ -761,8 +831,7 @@ void BetterPause::setupScrollableButtons(
 	m_pMenuButtons->setVisible(false);
 
 	m_pScrollUpSprite = cocos2d::CCSprite::createWithSpriteFrameName("edit_upBtn_001.png");
-	m_pScrollUpSprite->setScaleX(2.f);
-	m_pScrollUpSprite->setScaleY(1.4f);
+	m_pScrollUpSprite->setScale(0.55f);
 	m_pScrollUpButton = CCMenuItemSpriteExtra::create(
 		m_pScrollUpSprite, this,
 		(cocos2d::SEL_MenuHandler)&BetterPause::onScrollUpButton
@@ -771,8 +840,7 @@ void BetterPause::setupScrollableButtons(
 	m_pMenuButtons2->addChild(m_pScrollUpButton);
 
 	m_pScrollDownSprite = cocos2d::CCSprite::createWithSpriteFrameName("edit_downBtn_001.png");
-	m_pScrollDownSprite->setScaleX(2.f);
-	m_pScrollDownSprite->setScaleY(1.4f);
+	m_pScrollDownSprite->setScale(0.55f);
 	m_pScrollDownButton = CCMenuItemSpriteExtra::create(
 		m_pScrollDownSprite, this,
 		(cocos2d::SEL_MenuHandler)&BetterPause::onScrollDownButton
@@ -809,7 +877,21 @@ void BetterPause::scrollWheel(float x, float y) {
 
 void BetterPause::update(float dt) {
 	cocos2d::CCLayer::update(dt);
+	updateScrollableInputState();
 	updateScrollButtons();
+}
+
+void BetterPause::updateScrollableInputState() {
+	if (!m_pButtonsList) return;
+	auto scene = cocos2d::CCDirector::get()->getRunningScene();
+	auto const enabled = !hasVisibleModal(scene, m_pQuestMenu);
+	if (enabled == m_scrollInputEnabled) return;
+
+	m_scrollInputEnabled = enabled;
+	m_pButtonsList->setTouchEnabled(enabled);
+	for (auto menu : m_scrollRowMenus) {
+		if (menu) menu->setTouchEnabled(enabled);
+	}
 }
 
 void BetterPause::updateScrollButtons() {
@@ -1148,28 +1230,44 @@ void BetterPause::onAutoCheckpointsA(cocos2d::CCObject* pSender) {
 }
 
 void BetterPause::updatePercentageObjects() {
-	Utils::getplayLayerA()->m_percentageLabel->setVisible(Utils::shareManager()->getGameVariable("0040"));
-
-	float ypos = Utils::winSize().height - 8.f;
-
-	if (Utils::shareManager()->m_showProgressBar) {
-		Utils::getplayLayerA()->m_progressBar->getParent()->setPositionY(ypos);
-		float xPer = (Utils::winSize().width / 2.f + (110.f * Utils::getplayLayerA()->m_progressBar->getParent()->getScale()));
-		float yPer = ypos;
-		Utils::getplayLayerA()->m_percentageLabel->setPosition(xPer, yPer);
-		Utils::getplayLayerA()->m_percentageLabel->setAnchorPoint({ 0.f, 0.5f });
+	auto playLayer = Utils::getplayLayerA();
+	if (!playLayer) {
+		return;
 	}
-	else {
-		Utils::getplayLayerA()->m_percentageLabel->setAnchorPoint({ 0.5f, 0.5f });
-		Utils::getplayLayerA()->m_percentageLabel->setPosition((Utils::winSize().width / 2.f), ypos);
+
+	auto manager = Utils::shareManager();
+	auto const showProgressBar = manager->m_showProgressBar;
+
+	if (playLayer->m_progressBar) {
+		playLayer->m_progressBar->setVisible(showProgressBar);
+	}
+	if (playLayer->m_progressFill) {
+		playLayer->m_progressFill->setVisible(showProgressBar);
+	}
+
+	if (playLayer->m_percentageLabel) {
+		playLayer->m_percentageLabel->setVisible(manager->getGameVariable("0040"));
+		if (showProgressBar && playLayer->m_progressBar) {
+			auto const barBox = playLayer->m_progressBar->boundingBox();
+			playLayer->m_percentageLabel->setAnchorPoint({ 0.f, 0.5f });
+			playLayer->m_percentageLabel->setPosition({
+				barBox.getMaxX() + 8.f,
+				playLayer->m_progressBar->getPositionY()
+			});
+		}
+		else {
+			playLayer->m_percentageLabel->setAnchorPoint({ 0.5f, 0.5f });
+			playLayer->m_percentageLabel->setPosition({
+				Utils::winSize().width / 2.f,
+				Utils::winSize().height - 8.f
+			});
+		}
 	}
 }
 
 void BetterPause::onProgressBarA(cocos2d::CCObject* pSender) {
 	Utils::shareManager()->m_showProgressBar = !Utils::shareManager()->m_showProgressBar;
-	if (Utils::getplayLayerA() && (Utils::getplayLayerA()->m_percentageLabel->isVisible() != Utils::shareManager()->getGameVariable("0040"))) {
-		this->updatePercentageObjects();
-	}
+	this->updatePercentageObjects();
 }
 
 void BetterPause::onProgressBarPercentageA(cocos2d::CCObject* pSender) {
@@ -1229,7 +1327,7 @@ bool SetVolumenPopup::init(Slider* m_pSliderRef) {
 	background->setContentSize({ 200.f, 100.f });
 	m_mainLayer->addChild(background);
 
-	m_buttonMenu = cocos2d::CCMenu::create();
+	m_buttonMenu = PopupButtonMenu::create();
 	m_buttonMenu->setPosition({ -98.f, 50.f });
 	auto imageClose = cocos2d::CCSprite::createWithSpriteFrameName("GJ_closeBtn_001.png");
 	imageClose->setScale(0.7f);
@@ -1249,7 +1347,7 @@ bool SetVolumenPopup::init(Slider* m_pSliderRef) {
 	underline->setOpacity(100);
 	m_mainLayer->addChild(underline);
 
-	m_pButtonsMenu = cocos2d::CCMenu::create();
+	m_pButtonsMenu = PopupButtonMenu::create();
 	m_pButtonsMenu->setPosition({ 0.f, 0.f });
 	m_mainLayer->addChild(m_pButtonsMenu, 1);
 
@@ -1286,8 +1384,6 @@ bool SetVolumenPopup::init(Slider* m_pSliderRef) {
 	this->setTouchEnabled(true);
 	this->setKeyboardEnabled(true);
 	this->setMouseEnabled(true);
-	this->registerWithTouchDispatcher();
-	this->setTouchPriority(3);
 
 
 
@@ -1336,7 +1432,7 @@ bool MoreOptionsPauseLayer::init() {
 	m_mainLayer->addChild(this->m_pBG);
 
 
-	m_buttonMenu = cocos2d::CCMenu::create();
+	m_buttonMenu = PopupButtonMenu::create();
 	m_buttonMenu->setPosition({ -120.f, 75.f });
 	auto imageClose = cocos2d::CCSprite::createWithSpriteFrameName("GJ_closeBtn_001.png");
 	imageClose->setScale(0.7f);
@@ -1366,7 +1462,7 @@ bool MoreOptionsPauseLayer::init() {
 	this->m_pBGOptions->setOpacity((GLubyte)70);
 	m_mainLayer->addChild(this->m_pBGOptions);
 
-	m_menuButtons = cocos2d::CCMenu::create();
+	m_menuButtons = PopupButtonMenu::create();
 	m_menuButtons->setPosition({ 0.f, 0.f });
 	m_mainLayer->addChild(m_menuButtons);
 
@@ -1403,8 +1499,6 @@ bool MoreOptionsPauseLayer::init() {
 	this->setTouchEnabled(true);
 	this->setKeyboardEnabled(true);
 	this->setMouseEnabled(true);
-	this->registerWithTouchDispatcher();
-	this->setTouchPriority(2);
 
 	return true;
 }
@@ -1644,10 +1738,10 @@ bool SelectQuickSettings::init() {
 	this->m_pBG->setContentSize({ 440.f, 290.f });
 	m_mainLayer->addChild(this->m_pBG);
 
-	m_buttonMenu = cocos2d::CCMenu::create();
+	m_buttonMenu = PopupButtonMenu::create();
 	m_buttonMenu->setPosition({ Utils::winSize().width / 2.f - 210.f, Utils::winSize().height / 2 + 140.f });
 	auto imageClose = cocos2d::CCSprite::createWithSpriteFrameName("GJ_backBtn_001.png");
-	auto buttonExtraItem = CCMenuItemSpriteExtra::create(imageClose, this, (cocos2d::SEL_MenuHandler)&MoreOptionsPauseLayer::onClose);
+	auto buttonExtraItem = CCMenuItemSpriteExtra::create(imageClose, this, (cocos2d::SEL_MenuHandler)&SelectQuickSettings::onClose);
 	m_buttonMenu->addChild(buttonExtraItem);
 	m_mainLayer->addChild(m_buttonMenu);
 
@@ -1665,11 +1759,9 @@ bool SelectQuickSettings::init() {
 
 	auto arrayList = cocos2d::CCArray::create();
 
-	auto mlt = MoreOptionsLayer::create();
-	mlt->keyBackClicked();
-	CC_SAFE_DELETE(mlt);
+	(void)MoreOptionsLayer::create();
 
-	auto menu = cocos2d::CCMenu::create();
+	auto menu = PopupButtonMenu::create();
 	auto nameList = cocos2d::CCLabelBMFont::create("Progress Bar", "bigFont.fnt");
 	auto btnSelect = CCMenuItemToggler::createWithStandardSprites(this, (cocos2d::SEL_MenuHandler)&SelectQuickSettings::onToggleWithGameVariable, 0.6f);
 	for (int j = 0; j < 6; j++) { // Recorremos el arreglo posQuickA
@@ -1695,7 +1787,7 @@ bool SelectQuickSettings::init() {
 
 	for (size_t i = 0; i < BetterPause::quickSettings_Name.size(); i++)
 	{
-		auto menu = cocos2d::CCMenu::create();
+		auto menu = PopupButtonMenu::create();
 		auto nameList = cocos2d::CCLabelBMFont::create(BetterPause::quickSettings_Name[i].c_str(), "bigFont.fnt");
 		auto btnSelect = CCMenuItemToggler::createWithStandardSprites(this, (cocos2d::SEL_MenuHandler)&SelectQuickSettings::onToggleWithGameVariable, 0.6f);
 		for (int j = 0; j < 6; j++) { // Recorremos el arreglo posQuickA
@@ -1737,8 +1829,6 @@ bool SelectQuickSettings::init() {
 	this->setTouchEnabled(true);
 	this->setKeyboardEnabled(true);
 	this->setMouseEnabled(true);
-	this->registerWithTouchDispatcher();
-	this->setTouchPriority(2);
 
 	return true;
 }
@@ -1752,16 +1842,11 @@ void SelectQuickSettings::onToggleWithGameVariable(CCObject* pSender) {
 		}
 	}
 
-	if (reinterpret_cast<CCMenuItemToggler*>(pSender)->isToggled()) {
-		count--;
-	}
-	else {
-		count++;
-	}
+	auto toggle = geode::cast::typeinfo_cast<CCMenuItemToggler*>(pSender);
+	if (!toggle) return;
+	auto const prospectiveCount = count + (toggle->isToggled() ? -1 : 1);
 
-	std::cout << count << "\t" << reinterpret_cast<CCMenuItemToggler*>(pSender)->isToggled() << std::endl;
-
-	if (count > 6) {
+	if (prospectiveCount > 6) {
 		FLAlertLayer::create(
 			nullptr,
 			"Maximum Exceeded",
@@ -1769,18 +1854,7 @@ void SelectQuickSettings::onToggleWithGameVariable(CCObject* pSender) {
 			nullptr,
 			"You've exceeded the maximum number of quick settings."
 		)->show();
-		reinterpret_cast<CCMenuItemToggler*>(pSender)->toggle(true);
-	}
-
-	if (count < 3) {
-		FLAlertLayer::create(
-			nullptr,
-			"Minimum Not Met",
-			"OK",
-			nullptr,
-			"You haven't met the minimum number of quick settings."
-		)->show();
-		reinterpret_cast<CCMenuItemToggler*>(pSender)->toggle(false);
+		toggle->toggle(true);
 	}
 }
 

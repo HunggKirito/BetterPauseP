@@ -101,59 +101,6 @@ void Utils::RainbowSelectA(bool ranN, bool ranP, cocos2d::CCNodeRGBA* obj, float
 
 }
 
-bool Utils::direxist(const char* szPath)
-{
-	DWORD dwAttrib = GetFileAttributesA(szPath);
-	return (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
-}
-
-std::string Utils::GetAppdataDir() {
-	char* sAppDataPath = {}; size_t iAppDataPathLength = {};
-	_dupenv_s(&sAppDataPath, &iAppDataPathLength, "LOCALAPPDATA");
-	if (sAppDataPath) {
-		std::string stdAppData = sAppDataPath;
-		return stdAppData;
-	}
-	else return "";
-}
-
-std::string Utils::GetCurrentDirectoryZ()
-{
-	char buffer[MAX_PATH];
-	GetModuleFileNameA(NULL, buffer, MAX_PATH);
-	std::string::size_type pos = std::string(buffer).find_last_of("\\/");
-
-	return std::string(buffer).substr(0, pos);
-}
-
-std::string Utils::GetAppdataDirGD() {
-	std::string appdataGD = GetAppdataDir() + "\\GeometryDash\\";
-	return appdataGD;
-}
-
-std::string Utils::GetFolderMusicCurrent() {
-	bool isDiferentDir = shareManager()->getGameVariable("0033");
-	std::string dir = isDiferentDir ? "Resources\\" : GetAppdataDirGD();
-	return dir;
-
-}
-
-void Utils::copyToClipboardAggr(const char* text) {
-	const size_t len = strlen(text) + 1;
-	auto hMem = GlobalAlloc(GMEM_MOVEABLE, len);
-	if (hMem) {
-		auto gL = GlobalLock(hMem);
-		if (gL) {
-			memcpy(gL, text, len);
-			GlobalUnlock(hMem);
-			OpenClipboard(0);
-			EmptyClipboard();
-			SetClipboardData(CF_TEXT, hMem);
-			CloseClipboard();
-		}
-	}
-}
-
 std::string Utils::convertChartoString(char* c) {
 	std::string tmp = c;
 	return tmp;
@@ -168,13 +115,6 @@ tm* Utils::getRTimeCurrent() {
 	time_t tSac = time(NULL);
 	struct tm* tmP = localtime(&tSac);
 	return tmP;
-}
-
-void Utils::getPosCursorAggregates() {
-	POINT cursorPos;
-	GetCursorPos(&cursorPos);
-	//objsUniversal::positionCursorScree[0] = cursorPos.x;
-	//objsUniversal::positionCursorScree[1] = cursorPos.y;
 }
 
 int Utils::getCheatIndicatorState() {
@@ -485,12 +425,6 @@ std::string Utils::getVehicleStateString(PlayerObject* player) {
 	}
 }
 
-
-bool Utils::deleteMusicWithID(const char* ID) {
-	std::string delcommand = GetFolderMusicCurrent() + ID + ".mp3";
-	std::error_code error;
-	return std::filesystem::remove(delcommand, error) && !error;
-}
 
 std::string Utils::rgbToHex(int r, int g, int b) {
 	std::stringstream stream;

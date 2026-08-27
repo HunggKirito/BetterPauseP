@@ -17,7 +17,12 @@ void BetterPauseManager::encodeListTo(DS_Dictionary* data, const ListData& list)
 		data->setSubDictForKey(list.m_sTitle);
 		data->stepIntoSubDictWithKey(list.m_sTitle);
 	}
-	data->setStringArrayForKey("entries", list.m_vEntries);
+	gd::vector<gd::string> entries;
+	entries.reserve(list.m_vEntries.size());
+	for (auto const& entry : list.m_vEntries) {
+		entries.emplace_back(entry);
+	}
+	data->setStringArrayForKey("entries", entries);
 	data->setIntegerForKey("offset", list.m_uOffset);
 	data->setIntegerForKey("index", list.m_uIndex);
 	data->stepOutOfSubDict();
@@ -27,7 +32,10 @@ bool BetterPauseManager::loadListFrom(DS_Dictionary* data, ListData& list) {
 	if (!data->stepIntoSubDictWithKey(list.m_sTitle)) {
 		return false;
 	}
-	list.m_vEntries = data->getStringArrayForKey("entries");
+	list.m_vEntries.clear();
+	for (auto const& entry : data->getStringArrayForKey("entries")) {
+		list.m_vEntries.emplace_back(entry);
+	}
 	list.m_uOffset = data->getIntegerForKey("offset");
 	list.m_uIndex = data->getIntegerForKey("index");
 	//handle error checking in GUI class.
@@ -96,7 +104,8 @@ VariableA& sharedStateBP() {
 }
 
 void VariableA::LoadSettings() {
-	auto file = fopen((Utils::GetAppdataDirGD() + std::string("betterPause2.data")).c_str(), "rb");
+	auto const path = geode::Mod::get()->getSaveDir() / "betterPause2.data";
+	auto file = fopen(path.string().c_str(), "rb");
 	if (file) {
 		fseek(file, 0, SEEK_END);
 		auto size = ftell(file);
@@ -109,7 +118,8 @@ void VariableA::LoadSettings() {
 }
 
 void VariableA::SaveSettings() {
-	auto file = fopen((Utils::GetAppdataDirGD() + std::string("betterPause2.data")).c_str(), "wb");
+	auto const path = geode::Mod::get()->getSaveDir() / "betterPause2.data";
+	auto file = fopen(path.string().c_str(), "wb");
 	if (file) {
 		fwrite(&sharedStateBP(), sizeof(sharedStateBP()), 1, file);
 		fclose(file);

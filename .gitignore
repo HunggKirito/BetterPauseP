@@ -43,6 +43,8 @@
 **/build
 # Ignore platform specific build folders
 build-*/
+.android-toolchain/
+dist/
 .reference-*/
 /libs/
 

@@ -3,11 +3,6 @@
 
 namespace Utils {
 
-	static auto proc = GetCurrentProcess();
-	static auto libcocos_base = reinterpret_cast<std::uintptr_t>(GetModuleHandleA("libcocos2d.dll"));
-	static auto fmod_base = reinterpret_cast<std::uintptr_t>(GetModuleHandleA("fmod.dll"));
-	static auto tBot_base = reinterpret_cast<std::uintptr_t>(GetModuleHandleA("tBot.dll"));
-
 	const char* getNameObj(cocos2d::CCNode* obj);
 
 	GameManager* shareManager();
@@ -34,17 +29,10 @@ namespace Utils {
 	cocos2d::CCSequence* rainbowPastelInit(float duration);
 	void ResetColorAndStopRainbow(cocos2d::CCNodeRGBA*& obj, cocos2d::_ccColor3B color);
 	void RainbowSelectA(bool ranN, bool ranP, cocos2d::CCNodeRGBA* obj, float durationranN, float durationranP, cocos2d::ccColor3B colorReset);
-	bool direxist(const char* szPath);
-	std::string GetAppdataDir();
-	std::string GetCurrentDirectoryZ();
-	std::string GetAppdataDirGD();
-	std::string GetFolderMusicCurrent();
-	void copyToClipboardAggr(const char* text);
 	std::string getIDCSW(cocos2d::CCNode* self);
 	std::string convertChartoString(char* c);
 	std::string convertConstChartoString(const char* c);
 	tm* getRTimeCurrent();
-	void getPosCursorAggregates();
 	int getCheatIndicatorState();
 	cocos2d::ccColor3B getcolorCheatNow();
 	const char* getCCSwitchIntFloat(const char* txtFloat, const char* txtInt, float nf, bool isAcurr);
@@ -97,7 +85,6 @@ namespace Utils {
 	char* convert_to_non_const_char(const char* str);
 	std::string formatNumberString(std::string format, float firstFloat, float secondFloat);
 	std::string getVehicleStateString(PlayerObject* player);
-	bool deleteMusicWithID(const char* ID);
 	std::string rgbToHex(int r, int g, int b);
 	void hexToRgb(std::string hexValue, float& r, float& g, float& b);
 	void rgbToHexForAggregates(int i);

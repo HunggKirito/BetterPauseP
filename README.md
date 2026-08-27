@@ -1,6 +1,6 @@
-# BetterPauseP
+# BetterPauseX
 
-An unofficial port of BetterPause for Geometry Dash 2.2081 and Geode 5.9.0.
+An unofficial maintenance port of BetterPause for Geometry Dash 2.2081 and Geode 5.9.0.
 
 ## Features
 
@@ -33,9 +33,8 @@ An unofficial port of BetterPause for Geometry Dash 2.2081 and Geode 5.9.0.
 
 ## Requirements
 
-- Geometry Dash 2.2081 with Geode 5.9.0 or newer
+- Geometry Dash 2.2081 with Geode 5.9.0 or newer on Windows x64 or Android (32-bit/64-bit)
 - `geode.node-ids` 1.23.3 or newer
-#### * !Note: For now, I've only created a port for Windows; if I have time, I might port it to mobile as well!
 
 ## Credits
 

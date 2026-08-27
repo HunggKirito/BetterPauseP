@@ -66,6 +66,8 @@ public:
 	CCMenuItemSpriteExtra* m_pScrollUpButton = nullptr;
 	CCMenuItemSpriteExtra* m_pScrollDownButton = nullptr;
 	float m_pButtonsMinY = 0.f;
+	bool m_scrollInputEnabled = true;
+	std::vector<cocos2d::CCMenu*> m_scrollRowMenus;
 
 	static BetterPause* create(PauseLayer* pauseLayer, bool isEditor, bool notBetter);
 	bool init(PauseLayer* pauseLayer, bool isEditor, bool notBetter);
@@ -73,6 +75,7 @@ public:
 	void scrollWheel(float x, float y) override;
 	void update(float dt) override;
 	void updateScrollButtons();
+	void updateScrollableInputState();
 	void onScrollUpButton(cocos2d::CCObject* sender);
 	void onScrollDownButton(cocos2d::CCObject* sender);
 	void createToggleButton(cocos2d::SEL_MenuHandler callback, bool on,
@@ -148,6 +151,7 @@ struct ListData {
 	ListData() { /*doesn't matter since only used in default ctor of LoaderManager*/ };
 };
 
+class HorizontalList;
 
 class PauseSettingsLayer : public GJDropDownLayer
 {
