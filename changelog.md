@@ -1,3 +1,7 @@
+# 1.1.1
+
+- Fixed some screen ratio identification bug.
+
 # 1.1.0
 
 - Added Android 32-bit and 64-bit support.

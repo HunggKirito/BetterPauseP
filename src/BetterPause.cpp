@@ -645,7 +645,7 @@ bool BetterPause::init(PauseLayer* pauseLayer, bool isEditor, bool notBetter) {
 
 	//std::cout << fabs(aspectRatio - targetAspectRatio) << std::endl;
 
-	if (fabs(aspectRatio - targetAspectRatio) < 0.39) {
+	if (fabs(aspectRatio - targetAspectRatio) < 0.1f) {
 
 		this->m_pVolumenMusicSettingsLabel->setScale(0.4f);
 		m_pVolumenMusicSettingsLabel->setPositionX(m_pVolumenMusicSettingsLabel->getPositionX() + 70.f);
